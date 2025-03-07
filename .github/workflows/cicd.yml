@@ -42,7 +42,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:latest .
+          docker build --platform linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/myapp:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
   deploy:
@@ -71,4 +71,4 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:latest
             docker stop myapp || true
             docker rm myapp || true
-            docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/myapp:latest
+            docker run -d --name myapp  -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/myapp:latest
