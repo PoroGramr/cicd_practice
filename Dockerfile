@@ -1,7 +1,5 @@
 # 1. OpenJDK 17 기반으로 빌드
-FROM --platform=linux/arm64 eclipse-temurin:17-jdk AS build
-
-
+FROM openjdk:17-jdk-slim
 
 # 2. 작업 디렉토리 설정
 WORKDIR /app
