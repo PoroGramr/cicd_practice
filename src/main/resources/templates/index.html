@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot 테스트 페이지</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>환영합니다!</h1>
+    <p>이 페이지는 Spring Boot + Thymeleaf 테스트용입니다.</p>
+    <button onclick="showMessage()">클릭하세요</button>
+    <p id="message"></p>
+</div>
+
+<script>
+    function showMessage() {
+        document.getElementById("message").innerText = "Spring Boot 연동 성공!";
+    }
+</script>
+</body>
+</html>
