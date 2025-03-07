@@ -1,5 +1,5 @@
-# 1. OpenJDK 17 기반으로 빌드
-FROM openjdk:17-jdk-slim
+# 1. OpenJDK 17 기반으로 빌드 (멀티 스테이지 빌드)
+FROM --platform=linux/arm64 openjdk:17-jdk-slim AS build
 
 # 2. 작업 디렉토리 설정
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY . .
 RUN ./gradlew build --no-daemon
 
 # 5. 실행 환경을 위한 JDK 17 베이스 이미지
-FROM eclipse-temurin:17-jre
+FROM --platform=linux/arm64 eclipse-temurin:17-jre
 
 # 6. 작업 디렉토리 설정
 WORKDIR /app
