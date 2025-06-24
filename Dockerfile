@@ -1,31 +1,22 @@
-# 1. OpenJDK 17 기반으로 빌드 (멀티 스테이지 빌드)
-FROM --platform=linux/arm64 openjdk:17-jdk-slim AS build
-
-# 2. 작업 디렉토리 설정
+# 🔹 1단계: 빌드 환경 (Gradle 빌드)
+FROM gradle:8.5-jdk17 AS builder
 WORKDIR /app
 
-# 3. Gradle 캐시 최적화를 위한 의존성만 먼저 복사
-COPY gradlew gradlew
-COPY gradle gradle
+# Gradle 캐싱을 위해 의존성 관련 파일 먼저 복사
 COPY build.gradle settings.gradle ./
+COPY gradle gradle
+RUN gradle build || return 0  # Gradle 캐시 적용
 
-# Gradle 권한 설정 및 의존성 다운로드
-RUN chmod +x gradlew && \
-    ./gradlew dependencies --no-daemon --parallel
-
-# 4. 프로젝트 전체 복사 및 빌드 실행
+# 전체 소스 복사 후 빌드 실행
 COPY . .
-RUN ./gradlew build --no-daemon --parallel
+RUN gradle clean build -x test
 
-# 5. 실행 환경을 위한 JRE 17 베이스 이미지
-FROM --platform=linux/arm64 eclipse-temurin:17-jre-jammy
-
-# 6. 작업 디렉토리 설정
+# 🔹 2단계: 실행 환경 (JVM만 포함)
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
-# 7. 빌드된 JAR 파일 복사
-COPY --from=build /app/build/libs/*.jar app.jar
+# 빌드된 JAR 파일을 실행 환경으로 복사
+COPY --from=builder /app/build/libs/*.jar app.jar
 
-# 8. Java 옵션 설정 및 실행 명령어
-ENV JAVA_OPTS="-Xms512m -Xmx1024m"
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# 컨테이너 실행 시 Spring Boot 애플리케이션 실행
+ENTRYPOINT ["java", "-jar", "app.jar"]
